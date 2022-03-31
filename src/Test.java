@@ -2,6 +2,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Scanner;
 import javax.imageio.ImageIO;
 
 public class Test{
@@ -16,10 +17,12 @@ public class Test{
 
     extractImageData();
 
+    generateImage("targettext");
+
   }
   
 
-  public static void extractImageData() throws IOException{
+  private static void extractImageData() throws IOException{
 
     BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 
@@ -61,6 +64,31 @@ public class Test{
     }
 
     System.setOut(stdout);
+
+  }
+
+
+  private static void generateImage(String flag) throws IOException{
+
+    Scanner buffer[] = new Scanner[3];
+
+    buffer[0] = new Scanner(new File("../assets/" + flag + "_Red.txt"));
+    buffer[1] = new Scanner(new File("../assets/" + flag + "_Green.txt"));
+    buffer[2] = new Scanner(new File("../assets/" + flag + "_Blue.txt"));
+
+    BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+
+    for(int i = 0; i < WIDTH; i++){
+      for(int j = 0; j < HEIGHT; j++){        
+        image.setRGB(i, j, (buffer[0].nextInt() << 16) | (buffer[1].nextInt() << 8) | buffer[2].nextInt());
+      }
+    }
+
+    try{
+      ImageIO.write(image,"jpg", new File("../assets/" + flag + ".jpg"));
+    } catch (IOException e){
+      e.printStackTrace();
+    }
 
   }
 
