@@ -15,7 +15,16 @@ public class Test{
 
   public static void main(String args[]) throws IOException{
 
+    long flag;
+
     extractImageData();
+
+    flag = System.nanoTime();
+
+    // XYZ();
+
+    flag = System.nanoTime() - flag;
+    System.out.println("XYZ Algorithm: " + flag + "ns");
 
     generateImage("targettext");
 
@@ -85,7 +94,7 @@ public class Test{
     }
 
     try{
-      ImageIO.write(image,"jpg", new File("../assets/" + flag + ".jpg"));
+      ImageIO.write(image, "jpg", new File("../assets/" + flag + ".jpg"));
     } catch (IOException e){
       e.printStackTrace();
     }
