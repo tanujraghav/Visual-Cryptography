@@ -18,6 +18,6 @@
 |Algorithm|Block Size (Bits)|Key Size (Bits)|Time taken in Encryption (in nanoseconds)|
 |:--|:--|:--|--:|
 |**DES**|64|56|10928163039 ns|
-|**3DES**|64|168||
+|**3DES**|64|168|11126106089 ns|
 |**AES**|128|256||
 |**RSA**|128|256||
