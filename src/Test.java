@@ -29,6 +29,16 @@ public class Test{
 
     generateImage("DES");
 
+    // 3DES Encryption
+    flag = System.nanoTime();
+
+    new TripleDES();
+
+    flag = System.nanoTime() - flag;
+    System.out.println("3DES Algorithm: " + flag + "ns");
+
+    generateImage("3DES");
+
   }
   
 
