@@ -39,6 +39,16 @@ public class Test{
 
     generateImage("3DES");
 
+    // AES Encryption
+    flag = System.nanoTime();
+
+    new AES();
+
+    flag = System.nanoTime() - flag;
+    System.out.println("AES Algorithm: " + flag + "ns");
+
+    generateImage("AES");
+
   }
   
 
