@@ -19,14 +19,15 @@ public class Test{
 
     extractImageData();
 
+    // DES Encryption
     flag = System.nanoTime();
 
-    // XYZ();
+    new DES();
 
     flag = System.nanoTime() - flag;
-    System.out.println("XYZ Algorithm: " + flag + "ns");
+    System.out.println("DES Algorithm: " + flag + "ns");
 
-    generateImage("targettext");
+    generateImage("DES");
 
   }
   
@@ -35,11 +36,7 @@ public class Test{
 
     BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 
-    try {
-      image = ImageIO.read(INFILE);
-    } catch(IOException e){
-      e.printStackTrace();
-    }
+    image = ImageIO.read(INFILE);
 
     int pixelData[][] = new int[3][WIDTH * HEIGHT], buff;
 
@@ -58,17 +55,17 @@ public class Test{
     PrintStream stdout = System.out;
 
     System.setOut(new PrintStream(new File("../assets/targettext_Red.txt")));
-    for(int elem:pixelData[0]){
+    for(int elem: pixelData[0]){
       System.out.print(elem + " ");
     }
 
     System.setOut(new PrintStream(new File("../assets/targettext_Green.txt")));
-    for(int elem:pixelData[1]){
+    for(int elem: pixelData[1]){
       System.out.print(elem + " ");
     }
 
     System.setOut(new PrintStream(new File("../assets/targettext_Blue.txt")));
-    for(int elem:pixelData[2]){
+    for(int elem: pixelData[2]){
       System.out.print(elem + " ");
     }
 
@@ -93,11 +90,7 @@ public class Test{
       }
     }
 
-    try{
-      ImageIO.write(image, "jpg", new File("../assets/" + flag + ".jpg"));
-    } catch (IOException e){
-      e.printStackTrace();
-    }
+    ImageIO.write(image, "jpg", new File("../assets/" + flag + ".jpg"));
 
   }
 
