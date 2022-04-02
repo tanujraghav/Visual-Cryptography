@@ -50,6 +50,17 @@ public class Test {
 
     generateImage("AES", "cipher", "en");
     generateImage("AES", "plain", "de");
+
+    // RSA Encryption
+    tmp = System.nanoTime();
+
+    new RSA();
+
+    tmp = System.nanoTime() - tmp;
+    System.out.println("RSA Algorithm: " + tmp + " ns");
+
+    generateImage("RSA", "cipher", "en");
+    generateImage("RSA", "plain", "de");
   }
 
   private static void extractImageData() throws IOException {
