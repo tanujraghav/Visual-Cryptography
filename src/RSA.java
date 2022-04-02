@@ -12,68 +12,65 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public class RSA{
-
-
-  static KeyPairGenerator keyPairGenerator = null;
-
-  static KeyPair keyPair = null;
-
-  static Cipher cipher = null;
-
-  static final String[] pixels = {"Red", "Green", "Blue"};
+  static final int WIDTH = 1000, HEIGHT = 1000;
+  static final String[] COLORS = {"Red", "Green", "Blue"};
 
   static final PrintStream stdout = System.out;
 
+  static {
+    try {
+      KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+      keyPairGenerator.initialize(512);
 
-  static{
+      KeyPair keyPair = keyPairGenerator.generateKeyPair();
+      Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 
-    try{
-
-      keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-      keyPairGenerator.initialize(1024);
-
-      keyPair = keyPairGenerator.generateKeyPair();
-      cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-
-      for(String i: pixels){
-        encrypt(i);
+      for(String i: COLORS) {
+        crypto(i, keyPair, cipher, "plain", new String[]{"RSA/cipher", "RSA/plain"});
       }
-
-    } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IOException e){
+    } catch(NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IOException e){
       e.printStackTrace();
     }
-
   }
+  
+  private static void crypto(String clr, KeyPair keyPair, Cipher cipher, String src, String[] dest)
+  throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, IOException {
+    Scanner scanner = new Scanner(new File("../assets/" + src + "text_" + clr + ".txt"));
 
+    byte[][] buffer = new byte[2][WIDTH * HEIGHT];
 
-  private static void encrypt(String str) throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, IOException{
-
-    Scanner scanner = new Scanner(new File("../assets/targettext_" + str + ".txt"));
-
-    byte[] ciphertext = new byte[1000000];
-
-    for(int j = 0; j < 10000; j++){
-
-      byte[] plaintext = new byte[100];
-      for(int i = 0; i < plaintext.length; i++){
-        plaintext[i] = (byte) scanner.nextInt();
+    for(int i = 0; i < 31250; i++){
+      byte[] tmp = new byte[32];
+      for(int j = 0; j < tmp.length; j++) {
+        tmp[j] = (byte) scanner.nextInt();
       }
 
       cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
-      byte[] buff = cipher.doFinal(plaintext);
+      byte[] buff = cipher.doFinal(tmp);
 
-      for(int i = 0; i < plaintext.length; i++){
-        ciphertext[100*j + i] = buff[i];
+      for(int j = 0; j < tmp.length; j++) {
+        buffer[0][tmp.length * i + j] = buff[j];
       }
 
+      cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
+      buff = cipher.doFinal(buff);
+
+      for(int j = 0; j < tmp.length; j++) {
+        buffer[1][tmp.length * i + j] = buff[j];
+      }
     }
 
-    System.setOut(new PrintStream(new File("../assets/RSA_" + str + ".txt")));
-    for(byte elem: ciphertext){
-      System.out.print((elem & 0xff) + " ");
+    for(int i = 0; i < buffer.length; i++) {
+      toFile(dest[i], clr, buffer[i]);
     }
 
     System.setOut(stdout);
+  }
 
+  private static void toFile(String dest, String clr, byte[] buffer) throws IOException {
+    System.setOut(new PrintStream(new File("../assets/" + dest + "text_" + clr + ".txt")));
+    for(byte i: buffer) {
+      System.out.print((i & 255) + " ");
+    }
   }
 }
