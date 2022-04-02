@@ -6,7 +6,7 @@
 
 [**Dr. Ankit Chaudhary**](https://www.jnu.ac.in/content/ankitchaudhary)
 
-### Team
+### Team Details:
 ||Group #13||
 |:--|:-:|--:|
 |Tanuj Raghav|19-11-EC-027|tanuj81_soe@jnu.ac.in|
@@ -17,7 +17,11 @@
 
 |Algorithm|Block Size (Bits)|Key Size (Bits)|Time taken in Encryption (in nanoseconds)|
 |:--|:--|:--|--:|
-|**DES**|64|56|10928163039 ns|
-|**3DES**|64|168|11126106089 ns|
-|**AES**|128|256|10546740154 ns|
-|**RSA**|117|1024|11724529375 ns|
+|**DES**|64|56|11010416806 ns|
+|**3DES**|64|168|11585377305 ns|
+|**AES**|128|256|12031297012 ns|
+
+---
+
+**TODO**
+- [ ] RSA
