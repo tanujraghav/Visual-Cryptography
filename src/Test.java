@@ -49,6 +49,16 @@ public class Test{
 
     generateImage("AES");
 
+    // RSA Encryption
+    flag = System.nanoTime();
+
+    new RSA();
+
+    flag = System.nanoTime() - flag;
+    System.out.println("RSA Algorithm: " + flag + "ns");
+
+    generateImage("RSA");
+
   }
   
 
