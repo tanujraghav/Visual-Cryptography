@@ -5,124 +5,96 @@ import java.io.PrintStream;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
 
-public class Test{
-
-
+public class Test {
   static final int WIDTH = 1000, HEIGHT = 1000;
-
   static final File INFILE = new File("../assets/target.jpg");
 
+  static final String[] COLORS = {"Red", "Green", "Blue"};
 
-  public static void main(String args[]) throws IOException{
+  static final PrintStream stdout = System.out;
 
-    long flag;
+  static long tmp = 0;
 
+  public static void main(String[] args) throws IOException {
     extractImageData();
 
     // DES Encryption
-    flag = System.nanoTime();
+    tmp = System.nanoTime();
 
     new DES();
 
-    flag = System.nanoTime() - flag;
-    System.out.println("DES Algorithm: " + flag + "ns");
+    tmp = System.nanoTime() - tmp;
+    System.out.println("DES Algorithm: " + tmp + " ns");
 
-    generateImage("DES");
+    generateImage("DES", "cipher", "en");
+    generateImage("DES", "plain", "de");
 
     // 3DES Encryption
-    flag = System.nanoTime();
+    tmp = System.nanoTime();
 
     new TripleDES();
 
-    flag = System.nanoTime() - flag;
-    System.out.println("3DES Algorithm: " + flag + "ns");
+    tmp = System.nanoTime() - tmp;
+    System.out.println("3DES Algorithm: " + tmp + " ns");
 
-    generateImage("3DES");
+    generateImage("3DES", "cipher", "en");
+    generateImage("3DES", "plain", "de");
 
     // AES Encryption
-    flag = System.nanoTime();
+    tmp = System.nanoTime();
 
     new AES();
 
-    flag = System.nanoTime() - flag;
-    System.out.println("AES Algorithm: " + flag + "ns");
+    tmp = System.nanoTime() - tmp;
+    System.out.println("AES Algorithm: " + tmp + " ns");
 
-    generateImage("AES");
-
-    // RSA Encryption
-    flag = System.nanoTime();
-
-    new RSA();
-
-    flag = System.nanoTime() - flag;
-    System.out.println("RSA Algorithm: " + flag + "ns");
-
-    generateImage("RSA");
-
+    generateImage("AES", "cipher", "en");
+    generateImage("AES", "plain", "de");
   }
-  
 
-  private static void extractImageData() throws IOException{
-
+  private static void extractImageData() throws IOException {
     BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-
     image = ImageIO.read(INFILE);
 
-    int pixelData[][] = new int[3][WIDTH * HEIGHT], buff;
+    int[][] pixelData = new int[COLORS.length][WIDTH * HEIGHT];
+    int buff;
 
-    for(int i = 0; i < WIDTH; i++){
-      for(int j = 0; j < HEIGHT; j++){
-
+    for(int i = 0; i < WIDTH; i++) {
+      for(int j = 0; j < HEIGHT; j++) {
         buff = image.getRGB(i, j);
-
-        pixelData[0][i*WIDTH+j] = (buff >> 16) & 255;
-        pixelData[1][i*WIDTH+j] = (buff >> 8) & 255;
-        pixelData[2][i*WIDTH+j] = buff & 255;
-
+        for(int k = 0; k < COLORS.length; k++) {
+          pixelData[k][i * WIDTH + j] = (buff >> 8 * (2 - k)) & 255;
+        }
       }
     }
 
-    PrintStream stdout = System.out;
-
-    System.setOut(new PrintStream(new File("../assets/targettext_Red.txt")));
-    for(int elem: pixelData[0]){
-      System.out.print(elem + " ");
-    }
-
-    System.setOut(new PrintStream(new File("../assets/targettext_Green.txt")));
-    for(int elem: pixelData[1]){
-      System.out.print(elem + " ");
-    }
-
-    System.setOut(new PrintStream(new File("../assets/targettext_Blue.txt")));
-    for(int elem: pixelData[2]){
-      System.out.print(elem + " ");
+    for(int i = 0; i < COLORS.length; i++) {
+      toFile(COLORS[i], pixelData[i]);
     }
 
     System.setOut(stdout);
-
   }
 
+  private static void toFile(String clr, int[] data) throws IOException {
+    System.setOut(new PrintStream(new File("../assets/plaintext_" + clr + ".txt")));
+    for(int elem: data) {
+      System.out.print(elem+" ");
+    }
+  }
 
-  private static void generateImage(String flag) throws IOException{
-
-    Scanner buffer[] = new Scanner[3];
-
-    buffer[0] = new Scanner(new File("../assets/" + flag + "_Red.txt"));
-    buffer[1] = new Scanner(new File("../assets/" + flag + "_Green.txt"));
-    buffer[2] = new Scanner(new File("../assets/" + flag + "_Blue.txt"));
+  private static void generateImage(String algo, String type, String status) throws IOException {
+    Scanner[] scanner = new Scanner[3];
+    for(int i = 0; i < COLORS.length; i++) {
+      scanner[i] = new Scanner(new File("../assets/" + algo + "/" + type + "text_" + COLORS[i] + ".txt"));
+    }
 
     BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-
-    for(int i = 0; i < WIDTH; i++){
-      for(int j = 0; j < HEIGHT; j++){        
-        image.setRGB(i, j, (buffer[0].nextInt() << 16) | (buffer[1].nextInt() << 8) | buffer[2].nextInt());
+    for(int i = 0; i < WIDTH; i++) {
+      for(int j = 0; j < HEIGHT; j++) {        
+        image.setRGB(i, j, (scanner[0].nextInt() << 16) | (scanner[1].nextInt() << 8) | scanner[2].nextInt());
       }
     }
 
-    ImageIO.write(image, "jpg", new File("../assets/" + flag + ".jpg"));
-
+    ImageIO.write(image, "jpg", new File("../assets/" + algo + "/" + status + "crypted.jpg"));
   }
-
-
 }
