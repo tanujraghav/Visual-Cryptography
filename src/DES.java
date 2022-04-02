@@ -11,54 +11,43 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-public class DES{
-
-
-  static SecretKey secretKey = null;
-
-  static Cipher cipher = null;
-
-  static final String[] pixels = {"Red", "Green", "Blue"};
+public class DES {
+  static final int WIDTH = 1000, HEIGHT = 1000;
+  static final String[] COLORS = {"Red", "Green", "Blue"};
 
   static final PrintStream stdout = System.out;
 
+  static {
+    try {
+      SecretKey secretKey = KeyGenerator.getInstance("DES").generateKey();
+      Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
 
-  static{
-
-    try{
-
-      secretKey = KeyGenerator.getInstance("DES").generateKey();
-      cipher = Cipher.getInstance("DES/ECB/NoPadding");
-
-      for(String i: pixels){
-        encrypt(i);
+      for(String i: COLORS) {
+        crypto(i, secretKey, cipher, Cipher.ENCRYPT_MODE, "plain", "DES/cipher");
+        crypto(i, secretKey, cipher, Cipher.DECRYPT_MODE, "DES/cipher", "DES/plain");
       }
-
-    } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IOException e){
+    } catch(NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IOException e) {
       e.printStackTrace();
     }
-
   }
 
+  private static void crypto(String clr, SecretKey secretKey, Cipher cipher, int flag, String src, String dest)
+  throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, IOException {
+    Scanner scanner = new Scanner(new File("../assets/" + src + "text_" + clr + ".txt"));
 
-  private static void encrypt(String str) throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, IOException{
-
-    Scanner scanner = new Scanner(new File("../assets/targettext_" + str + ".txt"));
-
-    byte[] plaintext = new byte[1000000];
-    for(int i=0; i < plaintext.length; i++){
-      plaintext[i] = (byte) scanner.nextInt();
+    byte[] buffer = new byte[WIDTH * HEIGHT];
+    for(int i = 0; i < buffer.length; i++) {
+      buffer[i] = (byte) scanner.nextInt();
     }
 
-    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-    byte[] buff = cipher.doFinal(plaintext);
+    cipher.init(flag, secretKey);
+    buffer = cipher.doFinal(buffer);
 
-    System.setOut(new PrintStream(new File("../assets/DES_" + str + ".txt")));
-    for(byte elem: buff){
-      System.out.print((elem & 0xff) + " ");
+    System.setOut(new PrintStream(new File("../assets/" + dest + "text_" + clr + ".txt")));
+    for(byte i: buffer) {
+      System.out.print((i & 255) + " ");
     }
 
     System.setOut(stdout);
-
   }
 }
